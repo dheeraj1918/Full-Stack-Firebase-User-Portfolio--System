@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>VS Code UI</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #1e1e1e; color: white; }
+    .sidebar { width: 200px; background: #333; height: 100vh; float: left; padding: 1rem; }
+    .file { cursor: pointer; padding: 5px; color: white; }
+    .tab-btn { background: #2d2d2d; border: none; color: white; padding: 5px 10px; margin-right: 5px; }
+    .tab-btn.active { background: #007bff; }
+    .content { margin-left: 210px; padding: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="file" onclick="openTab('home')">Home</div>
+    <div class="file" onclick="openTab('dashboard')">Index</div>
+  </div>
+
+  <div class="content">
+    <div id="tabs"></div>
+    <div id="tab-content" class="mt-4">Click a file to view content.</div>
+  </div>
+
+  <script>
+    const tabs = new Map();
+
+    function openTab(name) {
+        if (!tabs.has(name)) {
+            const tab = document.createElement("button");
+            tab.className = "tab-btn";
+            tab.id = `tab-${name}`;
+
+            // Show cross mark for all tabs including 'home'
+            tab.innerHTML = `${name} <span onclick="closeTab(event, '${name}')" title="${name === 'home' ? 'Home cannot be closed' : 'Close tab'}">&times;</span>`;
+
+            tab.onclick = () => loadTab(name);
+            document.getElementById("tabs").appendChild(tab);
+            tabs.set(name, tab);
+        }
+        loadTab(name);
+        }
+
+
+
+    function loadTab(name) {
+      document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+      tabs.get(name).classList.add("active");
+
+      fetch(`/file/${name}`)
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById("tab-content").innerHTML = html;
+        });
+    }
+
+    function closeTab(e, name) {
+        e.stopPropagation(); // prevent tab switching
+
+        // 🛡️ Prevent closing Home tab
+        if (name === 'home') {
+            alert("🚫 'Home' tab cannot be closed.");
+            return;
+        }
+
+        // ✅ Safe to remove this tab
+        const tab = tabs.get(name);
+        if (tab) {
+            tab.remove();
+            tabs.delete(name);
+        }
+
+        // If no active tab, auto-load the first one
+        const active = document.querySelector(".tab-btn.active");
+        if (!active && tabs.size > 0) {
+            const first = [...tabs.keys()][0];
+            loadTab(first);
+        } else if (tabs.size === 0) {
+            document.getElementById("tab-content").innerText = "Click a file to view content.";
+        }
+    }
+    window.onload = () => {
+    openTab('home');
+    };
+  </script>
+</body>
+</html>

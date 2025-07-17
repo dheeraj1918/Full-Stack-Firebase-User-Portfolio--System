@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+</head>
+<body>
+    {% if not user.resume_url %}
+    <p>upload resume</p>
+    {% endif %}
+
+    {% if user.resume_url %}
+        <div class="container">
+            <iframe src="{{ user.resume_url }}" frameborder="0" height="700px" width="1200px"></iframe>
+        </div>
+    {% endif %}
+
+
+
+</body>
+</html>

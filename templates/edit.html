@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit your data</title>
+
+    <style>
+        .edit-box {
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #00FF9F;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3); 
+            backdrop-filter: blur(10px);
+            color: #fff;
+            }
+        input{
+                background-color:0 0 15px rgba(0,0,0,0.3);
+                padding: 5px 10px;
+                margin: 5px 0px;
+            }
+        .resume{
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #00FF9F;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3); 
+            backdrop-filter: blur(10px);
+            color: #fff;
+        }
+        .profile{
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #00FF9F;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3); 
+            backdrop-filter: blur(10px);
+            color: #fff;
+        }
+        button{
+            align-items: center;
+            padding: 20px 30px;
+            border: 1px solid #00FF9F;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="edit-box">
+        <form action="{{url_for('edit')}}" method="post">
+            <label class="form-label">username</label> <br>
+            <input type="text" placeholder="Full name" name="user_username" value="{{ user.name }}"> <br>
+            <label class="form-label">email</label> <br>
+            <input type="email" name="user_email" placeholder="email" readonly value="{{ user.email }}"> <br>
+            <label class="form-label">about yourself</label> <br>
+            <input type="text" name="user_about" placeholder="About yourself" value="{{ user.about }}"> <br>
+            <label class="form-label">github username</label> <br>
+            <input type="text" name="github_link" placeholder="GitHub username" value="{{ user.github }}"> <br>
+            <label class="form-label">linkedin username</label> <br>
+            <input type="text" name="linkedin_link" placeholder="LinkedIn username" value="{{ user.linkedin }}"> <br>
+            <button type="submit"  class="btn btn-success w-100">Submit</button> <br>
+        </form>
+    </div>
+    <div class="resume">
+        <form action="{{ url_for('user_resume') }}" method="post" enctype="multipart/form-data">
+        <p>upload your resume</p>
+        <input type="file" name="user_resume"> <br>
+        <button type="submit"  class="btn btn-success w-100">submit</button>
+    </form>
+    </div>
+    <div class="profile">
+        <form action="{{ url_for('user_photo')}}" method="post" enctype="multipart/form-data">
+        <p>upload your profile</p>
+        <input type="file" name="user_photo"> <br>
+        <button type="submit"  class="btn btn-success w-100">submit</button>
+    </form>
+    </div>
+</body>
+</html>

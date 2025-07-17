@@ -1,0 +1,16 @@
+<body>
+    <div>
+        {% if repos %}
+        <h1>repositories of {{username}}</h1>
+        <ul>
+           {% for repo in repos %}
+            <h3>               
+                 <a href="{{ repo.html_url }}" target="_blank" style="text-decoration: none; color:#00FF9F;">{{repo.name}}</a>
+            </h3>
+            {% endfor %}
+        </ul>
+        {% elif username %}
+            <p>No repositories found or incorrect username</p>
+        {% endif %}
+    </div>
+</body>

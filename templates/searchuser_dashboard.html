@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>VS Code UI</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #1e1e1e; color: white; }
+    .sidebar { width: 200px; background: #333; height: 100vh; float: left; padding: 1rem; }
+    .file { cursor: pointer; padding: 5px; color: white; border: 1px solid black; margin: 5px 0px;}
+    .tab-btn { background-color: #37373D; border: 1px solid #333; color: white; padding: 5px 10px; margin-right: 5px; }
+    .tab-btn.active { background: #37373D; }
+    .content { margin-left: 210px; padding: 1rem; }
+    .navbar {
+        background-color: #1e1e1e;
+        border-bottom: 1px solid #444;
+        gap: 20px;
+    }
+
+    .navbar p {
+        margin: 0 5px;
+        padding: 0;
+        cursor: pointer;
+    }
+
+    .navbar img {
+        margin-left: auto;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 1px solid #fff;
+    }
+
+  </style>
+</head>
+<body>
+    <div class="navbar">
+        <p>File</p>
+        <p>Edit</p>
+        <p>View</p>
+        <p>Run</p>
+        <p>Help</p>
+        <img src="{{search_user.photo_url}}" alt="User" />
+    </div>
+    
+  <div class="sidebar">
+    <div class="explorer" style="background-color: #323332;">
+        <div>Explorer</div>
+    </div>
+    <div class="file" onclick="openTab('searchuser_home')">Home</div>
+    <div class="file" onclick="openTab('searchuser_about')">About</div>
+    <div class="file" onclick="openTab('searchuser_github')">Github</div>
+    <div class="file" onclick="openTab('searchuser_linkedin')">Linkedin</div>
+    <div class="file" onclick="openTab('searchuser_resume')">resume</div>    
+  </div>
+
+  <div class="content">
+    <div id="tabs"></div>
+    <div id="tab-content" class="mt-4">Click a file to view content.</div>
+  </div>
+
+  <script>
+    const tabs = new Map();
+    const matchedUID = "{{ session['uid'] }}";
+    // Always reload content, even if tab exists
+      function openTab(name) {
+          if (!tabs.has(name)) {
+              const tab = document.createElement("button");
+              tab.className = "tab-btn";
+              tab.id = `tab-${name}`;
+              tab.innerHTML = `${name} <span onclick="closeTab(event, '${name}')">&times;</span>`;
+              tab.onclick = () => loadTab(name);
+              document.getElementById("tabs").appendChild(tab);
+              tabs.set(name, tab);
+          }
+          
+          // ✅ This forces reload of HTML every time
+          loadTab(name); 
+      }
+
+
+    function loadTab(name) {
+      document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+      tabs.get(name).classList.add("active");
+
+      fetch(`/file/${name}?uid=${matchedUID}`)
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById("tab-content").innerHTML = html;
+        });
+    }
+
+    function closeTab(e, name) {
+        e.stopPropagation(); // prevent tab switching
+
+        // 🛡️ Prevent closing Home tab
+        if (name === 'home') {
+            alert("🚫 'Home' tab cannot be closed.");
+            return;
+        }
+
+        // ✅ Safe to remove this tab
+        const tab = tabs.get(name);
+        if (tab) {
+            tab.remove();
+            tabs.delete(name);
+        }
+
+        // If no active tab, auto-load the first one
+        const active = document.querySelector(".tab-btn.active");
+        if (!active && tabs.size > 0) {
+            const first = [...tabs.keys()][0];
+            loadTab(first);
+        } else if (tabs.size === 0) {
+            document.getElementById("tab-content").innerText = "Click a file to view content.";
+        }
+    }
+    window.onload = () => {
+    openTab('searchuser_home');
+    };
+  </script>
+</body>
+</html>
